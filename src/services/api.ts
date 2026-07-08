@@ -26,6 +26,33 @@ const CALLING_CODE_MAP: Record<string, string> = {
   MX: '+52',
   ZA: '+27'
 };
+const CURRENCY_MAP: Record<string, { code: string; name: string }> = {
+  IN: { code: 'INR', name: 'Indian Rupee' },
+  US: { code: 'USD', name: 'US Dollar' },
+  GB: { code: 'GBP', name: 'British Pound' },
+  CA: { code: 'CAD', name: 'Canadian Dollar' },
+  AU: { code: 'AUD', name: 'Australian Dollar' },
+  DE: { code: 'EUR', name: 'Euro' },
+  FR: { code: 'EUR', name: 'Euro' },
+  JP: { code: 'JPY', name: 'Japanese Yen' },
+  CN: { code: 'CNY', name: 'Chinese Yuan' },
+  PK: { code: 'PKR', name: 'Pakistani Rupee' },
+  BD: { code: 'BDT', name: 'Bangladeshi Taka' },
+  NP: { code: 'NPR', name: 'Nepalese Rupee' },
+  AE: { code: 'AED', name: 'UAE Dirham' },
+  SG: { code: 'SGD', name: 'Singapore Dollar' },
+  KR: { code: 'KRW', name: 'South Korean Won' },
+  RU: { code: 'RUB', name: 'Russian Ruble' },
+  SA: { code: 'SAR', name: 'Saudi Riyal' },
+  MY: { code: 'MYR', name: 'Malaysian Ringgit' },
+  TH: { code: 'THB', name: 'Thai Baht' },
+  BR: { code: 'BRL', name: 'Brazilian Real' },
+  MX: { code: 'MXN', name: 'Mexican Peso' },
+  ZA: { code: 'ZAR', name: 'South African Rand' },
+};
+function getCurrency(countryCode?: string) {
+  return CURRENCY_MAP[countryCode || 'US'] || CURRENCY_MAP.US;
+}
 function getCallingCode(countryCode?: string, apiValue?: string) {
     if (apiValue && apiValue !== '+1')
         return apiValue;
@@ -69,8 +96,8 @@ function parseIpwhois(data: any): GeolocData {
     org: data.connection?.org || data.org || 'Unknown Org',
     latitude: typeof data.latitude === 'number' ? data.latitude : parseFloat(data.latitude || '0'),
     longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || '0'),
-    currency: data.currency?.name || 'Unknown Currency',
-    currencyCode: data.currency?.code || 'USD',
+    currency: getCurrency(data.country_code).name,
+currencyCode: getCurrency(data.country_code).code,
     callingCode: getCallingCode(data.country_code, data.country_phone),
   };
 }
@@ -91,8 +118,8 @@ function parseIpapi(data: any): GeolocData {
     org: data.org || 'Unknown Org',
     latitude: typeof data.latitude === 'number' ? data.latitude : parseFloat(data.latitude || '0'),
     longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || '0'),
-    currency: data.currency_name || 'Dollar',
-    currencyCode: data.currency || 'USD',
+    currency: getCurrency(data.country).name,
+currencyCode: getCurrency(data.country).code,
     callingCode: getCallingCode(data.country, data.country_calling_code),
   };
 }
