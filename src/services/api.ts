@@ -1,4 +1,40 @@
 import { GeolocData } from '../types';
+const CALLING_CODE_MAP: Record<string, string> = {
+  IN: '+91',
+  US: '+1',
+  GB: '+44',
+  CA: '+1',
+  AU: '+61',
+  FR: '+33',
+  DE: '+49',
+  IT: '+39',
+  ES: '+34',
+  RU: '+7',
+  CN: '+86',
+  JP: '+81',
+  KR: '+82',
+  PK: '+92',
+  BD: '+880',
+  NP: '+977',
+  LK: '+94',
+  AE: '+971',
+  SA: '+966',
+  SG: '+65',
+  MY: '+60',
+  TH: '+66',
+  BR: '+55',
+  MX: '+52',
+  ZA: '+27'
+};
+function getCallingCode(countryCode?: string, apiValue?: string) {
+    if (apiValue && apiValue !== '+1')
+        return apiValue;
+
+    if (!countryCode)
+        return '+1';
+
+    return CALLING_CODE_MAP[countryCode.toUpperCase()] || '+1';
+}
 
 export function isValidIp(ip: string): boolean {
   const trimmed = ip.trim();
@@ -35,7 +71,7 @@ function parseIpwhois(data: any): GeolocData {
     longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || '0'),
     currency: data.currency?.name || 'Unknown Currency',
     currencyCode: data.currency?.code || 'USD',
-    callingCode: data.country_phone || '+1',
+    callingCode: getCallingCode(data.country_code, data.country_phone),
   };
 }
 
@@ -57,7 +93,7 @@ function parseIpapi(data: any): GeolocData {
     longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || '0'),
     currency: data.currency_name || 'Dollar',
     currencyCode: data.currency || 'USD',
-    callingCode: data.country_calling_code || '+1',
+    callingCode: getCallingCode(data.country, data.country_calling_code),
   };
 }
 
